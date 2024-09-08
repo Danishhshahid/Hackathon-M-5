@@ -1,0 +1,77 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    
+    <div id="container">
+        <h1>Resume Builder</h1>
+        
+        <!-- Personal Info Form -->
+        <section id="form-part">
+            <h2>Personal Info</h2>
+            <label for="Image">Insert Image</label>
+            <input type="file" name="Profile-picture" id="profile-picture">
+            <label for="Name">Name</label>
+            <input type="text" name="name" id="name" placeholder="Please enter Your name" required>
+            <br>
+            <label for="Email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Please Enter your Email" required>
+            <br>
+            <label for="Contact">Contact</label>
+            <input type="text" name="contact" id="contact" placeholder="Please enter Your contact Number" required>
+            <br>
+            <label for="City">City</label>
+            <input type="text" name="city" id="city" placeholder="Please enter your city" required>
+        </section>
+        <button id="toggle-personal-info-btn" onclick="toggleSection('form-part')">Show/Hide Personal Info</button>
+
+        <!-- Education Form -->
+        <section id="education-section">
+            <h2>Education</h2>
+            <label for="education">Enter your education</label>
+            <textarea name="education" id="education" rows="3" placeholder="Enter Your Education (comma-separated)"></textarea>
+            <button type="reset">Reset</button>
+        </section>
+        <button id="toggle-education-btn" onclick="toggleSection('education-section')">Show/Hide Education</button>
+      
+        <!-- Skills Form -->
+        <section id="skills-section">
+            <h2>Skills</h2>
+            <label for="skills">Enter Your Skills</label>
+            <textarea name="skills" id="skills" rows="3" placeholder="Enter Your skills (comma-separated)"></textarea>
+            <button type="reset">Reset</button>
+        </section>
+        <button id="toggle-skills-btn" onclick="toggleSection('skills-section')">Show/Hide Skills</button>
+        
+        <!-- Work Experience Form -->
+        <section id="work-experience-section">
+            <h2>Work Experience</h2>
+            <label for="work-experience">Enter Work Experience</label>
+            <textarea name="work-experience" id="work-experience" rows="3" placeholder="Enter Your Work Experience (comma-separated)"></textarea>
+            <button type="reset">Reset</button>
+        </section>
+        <button id="toggle-work-btn" onclick="toggleSection('work-experience-section')">Show/Hide Work Experience</button>
+        
+        <br><br>
+        <button id="submit">Submit & Generate Resume</button>
+        
+        <button id="edit-resume">Edit Resume</button>
+        <!-- Placeholder for dynamically generated resume -->
+        
+        <div id="resume-output"></div>
+        <button id="download-resume">Download Resume as PDF</button>
+        <button id="generate-link">Generate Shareable Link</button>
+        <input type="text" id="username" placeholder="Enter your username" />
+        
+    </div>
+    
+        
+      
+        <script src="index.js"></script>
+</body>
+</html>
