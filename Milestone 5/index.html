@@ -4,7 +4,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Builder</title>
     <link rel="stylesheet" href="stylesheet.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     
@@ -62,16 +61,10 @@
         
         <button id="edit-resume">Edit Resume</button>
         <!-- Placeholder for dynamically generated resume -->
-        
         <div id="resume-output"></div>
-        <button id="download-resume">Download Resume as PDF</button>
-        <button id="generate-link">Generate Shareable Link</button>
-        <input type="text" id="username" placeholder="Enter your username" />
-        
     </div>
-    
-        
-      
-        <script src="index.js"></script>
+    <button id="download-pdf">Download as PDF</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

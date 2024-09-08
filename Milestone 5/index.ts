@@ -1,4 +1,5 @@
-import { jsPDF } from 'jspdf';
+declare let html2pdf: any;
+
 interface ResumeData {
     name: string;
     email: string;
@@ -9,9 +10,10 @@ interface ResumeData {
     skillsList: string[];
     workExperienceList: string[];
 }
+
 class ResumeBuilder {
-    private data: ResumeData;
-    private isEditable: boolean = false;
+    data: ResumeData;
+  private isEditable: boolean = false;
 
     constructor() {
         this.data = {
@@ -26,6 +28,7 @@ class ResumeBuilder {
         };
     }
 
+    // Store personal data
     storePersonalData(id: string, value: string) {
         switch (id) {
             case 'name':
@@ -43,6 +46,7 @@ class ResumeBuilder {
         }
     }
 
+    // Store profile picture
     storeProfilePicture(file: File) {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -52,6 +56,7 @@ class ResumeBuilder {
         reader.readAsDataURL(file);
     }
 
+    // Store comma-separated list data
     storeListData(id: string, value: string) {
         const values = value.split(',').map((item) => item.trim());
         switch (id) {
@@ -67,6 +72,7 @@ class ResumeBuilder {
         }
     }
 
+    // Update profile picture after it is loaded
     updateProfilePicture() {
         const profilePicElement = document.getElementById('profile-picture-preview') as HTMLImageElement;
         if (profilePicElement) {
@@ -74,17 +80,21 @@ class ResumeBuilder {
         }
     }
 
+    // Generate resume preview or editable fields
     generateResume() {
         const resumeOutput = document.getElementById('resume-output');
         if (resumeOutput) {
             if (this.isEditable) {
+                // Display editable inputs
                 resumeOutput.innerHTML = this.generateEditableFields();
             } else {
+                // Display non-editable resume
                 resumeOutput.innerHTML = this.generateStaticResume();
             }
         }
     }
 
+    // Generate editable fields
     private generateEditableFields() {
         return `
             <h2>Edit Resume</h2>
@@ -99,6 +109,7 @@ class ResumeBuilder {
         `;
     }
 
+    // Generate static resume
     private generateStaticResume() {
         return `
             <h2>Resume Preview</h2>
@@ -114,8 +125,10 @@ class ResumeBuilder {
         `;
     }
 
+    // Toggle edit mode and save changes if applicable
     toggleEdit() {
         if (this.isEditable) {
+            // Save changes from editable fields
             const nameInput = document.getElementById('input-name') as HTMLInputElement;
             const emailInput = document.getElementById('input-email') as HTMLInputElement;
             const contactInput = document.getElementById('input-contact') as HTMLInputElement;
@@ -133,15 +146,18 @@ class ResumeBuilder {
             this.storeListData('skills', skillsInput.value);
             this.storeListData('work-experience', workExperienceInput.value);
         }
-
+        
+        // Toggle between view and edit mode
         this.isEditable = !this.isEditable;
         this.generateResume();
     }
 }
 
+// Initialize the ResumeBuilder
 const resumeBuilder = new ResumeBuilder();
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Capture personal information inputs
     const personalInputs = document.querySelectorAll('#form-part input');
     personalInputs.forEach((input) => {
         input.addEventListener('input', (event) => {
@@ -150,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Capture profile picture
     const profilePictureInput = document.getElementById('profile-picture') as HTMLInputElement;
     profilePictureInput.addEventListener('change', (event) => {
         const target = event.target as HTMLInputElement;
@@ -158,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Capture list data (education, skills, work experience)
     const educationInput = document.getElementById('education') as HTMLTextAreaElement;
     const skillsInput = document.getElementById('skills') as HTMLTextAreaElement;
     const workExperienceInput = document.getElementById('work-experience') as HTMLTextAreaElement;
@@ -174,26 +192,31 @@ document.addEventListener('DOMContentLoaded', () => {
         resumeBuilder.storeListData('work-experience', workExperienceInput.value);
     });
 
-    const toggleEditButton = document.getElementById('toggle-edit');
-    toggleEditButton?.addEventListener('click', () => {
+    // Submit button to generate the resume
+    const submitButton = document.getElementById('submit');
+    submitButton?.addEventListener('click', () => {
+        resumeBuilder.generateResume();
+    });
+    
+    // Edit button to toggle edit mode
+    const editButton = document.getElementById('edit-resume');
+    editButton?.addEventListener('click', () => {
         resumeBuilder.toggleEdit();
     });
-
-    const downloadButton = document.getElementById('download-resume');
+    const downloadButton = document.getElementById('download-pdf');
     downloadButton?.addEventListener('click', () => {
-        const doc = new jsPDF();
         const resumeOutput = document.getElementById('resume-output');
-
         if (resumeOutput) {
-            doc.html(resumeOutput, {
-                callback: function (doc) {
-                    doc.save('resume.pdf');
-                },
-                x: 10,
-                y: 10
-            });
-        } else {
-            console.error('Resume output element not found');
+            // Generate the PDF from the resume preview
+            const options = {
+                margin: 0.5,
+                filename: `${resumeBuilder.data.name}-resume.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(resumeOutput).set(options).save();
         }
-    });
-});
+    
+    })
+})
