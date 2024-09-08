@@ -185,4 +185,90 @@ document.addEventListener('DOMContentLoaded', () => {
             html2pdf().from(resumeOutput).set(options).save();
         }
     });
+    // Helper function to generate a unique URL for the preview page
+    function generatePreviewURL(username) {
+        const baseURL = window.location.href.split('?')[0]; // Get base URL without query params
+        return `${baseURL}?preview=${encodeURIComponent(username)}`;
+    }
+    // Function to store the resume data in localStorage
+    function storeResumeForPreview(username, resumeData) {
+        localStorage.setItem(`resume_${username}`, JSON.stringify(resumeData));
+    }
+    // Function to display preview in a new window
+    function openPreviewWindow(username) {
+        const resumeData = localStorage.getItem(`resume_${username}`);
+        if (resumeData) {
+            // Open a new window for the preview
+            const previewWindow = window.open('', '_blank');
+            if (previewWindow) {
+                // Basic HTML structure for the preview page
+                previewWindow.document.write(`
+                <html>
+                <head>
+                    <title>Resume Preview</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2 { color: #333; }
+                        img { max-width: 150px; border-radius: 50%; margin-bottom: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Resume Preview</h2>
+                    <img src="${JSON.parse(resumeData).profilePicture}" alt="Profile Picture" />
+                    <p><strong>Name:</strong> ${JSON.parse(resumeData).name}</p>
+                    <p><strong>Email:</strong> ${JSON.parse(resumeData).email}</p>
+                    <p><strong>Contact:</strong> ${JSON.parse(resumeData).contact}</p>
+                    <p><strong>City:</strong> ${JSON.parse(resumeData).city}</p>
+                    <p><strong>Education:</strong> ${JSON.parse(resumeData).educationList.join(', ')}</p>
+                    <p><strong>Skills:</strong> ${JSON.parse(resumeData).skillsList.join(', ')}</p>
+                    <p><strong>Work Experience:</strong> ${JSON.parse(resumeData).workExperienceList.join(', ')}</p>
+                </body>
+                </html>
+            `);
+                previewWindow.document.close();
+            }
+        }
+        else {
+            alert('No resume data found for this user.');
+        }
+    }
+    // Event listener for generating shareable URL
+    const shareableUrlButton = document.getElementById('shareable-url');
+    shareableUrlButton === null || shareableUrlButton === void 0 ? void 0 : shareableUrlButton.addEventListener('click', () => {
+        const username = resumeBuilder.data.name;
+        if (username) {
+            // Store resume data in localStorage
+            storeResumeForPreview(username, resumeBuilder.data);
+            // Generate and display the unique URL
+            const previewURL = generatePreviewURL(username);
+            const urlInput = document.getElementById('generated-url');
+            if (urlInput) {
+                urlInput.value = previewURL;
+                urlInput.style.display = 'block';
+                urlInput.select();
+                document.execCommand('copy'); // Copy the URL to clipboard
+                alert('Shareable preview URL copied to clipboard!');
+            }
+            // Open the preview window
+            openPreviewWindow(username);
+        }
+        else {
+            alert('Please enter a name to generate the URL.');
+        }
+    });
+    // On page load, check if a preview URL is present and load the preview
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('preview');
+        if (username) {
+            const resumeData = localStorage.getItem(`resume_${username}`);
+            if (resumeData) {
+                resumeBuilder.data = JSON.parse(resumeData);
+                resumeBuilder.generateResume();
+            }
+            else {
+                alert('Resume data not found for this user.');
+            }
+        }
+    });
 });
